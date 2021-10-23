@@ -18,6 +18,7 @@ run the spring boot app and access the swagger UI via - http://localhost:8080/sw
 
 
 and input the seating aggangement as a list with each item in a new line.
+
 ![image](https://user-images.githubusercontent.com/25130570/138550328-5e24e69a-dbac-4016-911d-4ef17ef36e87.png)
 
 
