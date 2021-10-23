@@ -16,8 +16,8 @@ public class SeatingController {
 
     @GetMapping(value = "/seat")
     public MatrixItem[][] seat(
-//            @RequestParam List<List<Integer>> seatingArrangement,
+            @RequestParam List<Integer> seatingArrangement,
             @RequestParam Integer numberOfPassengers) {
-        return seatingService.seat(numberOfPassengers);
+        return seatingService.seat(seatingArrangement, numberOfPassengers);
     }
 }

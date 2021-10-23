@@ -8,39 +8,28 @@ import java.util.*;
 @RestController
 public class SeatingService {
 
+    /**
+     * gets seating arrangement in the form of a list and number of passengers from UI
+     * prints the numbers in seating arrangement in java console
+     * @param seatingArrangement
+     * @param numberOfPassengers
+     * @return
+     */
     public MatrixItem[][] seat(
-//            List<List<Integer>> seatingArrangement,
+            List<Integer> seatingArrangement,
             Integer numberOfPassengers) {
 
-        List<Integer> firstSection = Arrays.asList(3,2);
-        List<Integer> secondSection = Arrays.asList(4,3);
-        List<Integer> thirdSection = Arrays.asList(2,3);
-        List<Integer> fourthSection = Arrays.asList(3,4);
+        List<List<Integer>> masterList = new ArrayList<>();
+        int maxColumns = getMaxColumnsAndPopulateMasterList(seatingArrangement, masterList);
 
-        Map<Integer, List<Integer>> maxDimensionsOfASection = new HashMap<>();
-        maxDimensionsOfASection.put(0,firstSection);
-        maxDimensionsOfASection.put(1,firstSection);
-        maxDimensionsOfASection.put(2,firstSection);
-
-        maxDimensionsOfASection.put(3,secondSection);
-        maxDimensionsOfASection.put(4,secondSection);
-        maxDimensionsOfASection.put(5,secondSection);
-        maxDimensionsOfASection.put(6,secondSection);
-
-        maxDimensionsOfASection.put(7,thirdSection);
-        maxDimensionsOfASection.put(8,thirdSection);
-
-        maxDimensionsOfASection.put(9,fourthSection);
-        maxDimensionsOfASection.put(10,fourthSection);
-        maxDimensionsOfASection.put(11,fourthSection);
+        Map<Integer, List<Integer>> maxDimensionsOfASection =
+                populateMaxDimensionsMap(masterList, maxColumns);
 
         MatrixItem[][] matrices = new MatrixItem[4][12];
-        int maxColumns = 12;
 
         List<MatrixItem> aisleList = new ArrayList<>();
         List<MatrixItem> windowList = new ArrayList<>();
         List<MatrixItem> centerList = new ArrayList<>();
-
 
         for(int currentRow=0; currentRow<matrices.length; currentRow++) {
             int previousSectionColumnLength = 0;
@@ -89,8 +78,55 @@ public class SeatingService {
         return matrices;
     }
 
+    /**
+     * returns maximum columns in the seating layout
+     * @param seatingArrangement
+     * @param masterList
+     * @return
+     */
+    private int getMaxColumnsAndPopulateMasterList(List<Integer> seatingArrangement,
+                                                   List<List<Integer>> masterList) {
+        int maxColumns = 0;
+
+        for(int i = 0; i < seatingArrangement.size(); i += 2) {
+            List<Integer> sectionList = new ArrayList<>();
+            sectionList.add(seatingArrangement.get(i));
+            sectionList.add(seatingArrangement.get(i+1));
+            masterList.add(sectionList);
+            maxColumns += seatingArrangement.get(i);
+        }
+        return maxColumns;
+    }
+
+    /**
+     * populates a helper map, which is used to determine the max number of rows and
+     * columns in a seating section
+     * @param masterList
+     * @param maxColumns
+     * @return
+     */
+    private Map<Integer, List<Integer>> populateMaxDimensionsMap(
+            List<List<Integer>> masterList,
+            int maxColumns) {
+        Map<Integer, List<Integer>> maxDimensionsOfASection = new HashMap<>();
+        int counter = 1;
+        int counter1 = 0;
+        for(int i = 0; i< maxColumns; i++){
+            maxDimensionsOfASection.put(i, masterList.get(counter1));
+            if(counter == masterList.get(counter1).get(0)){
+                counter1 += 1;
+                counter = 0;
+            }
+            counter++;
+        }
+        return maxDimensionsOfASection;
+    }
+
+    /**
+     * prints seat layout to java console
+     * @param matrices
+     */
     private void printSeatLayoutToJavaConsole(MatrixItem[][] matrices) {
-        // print seat layout in console
         for (MatrixItem[] matrix : matrices) {
             for (MatrixItem matrixItem : matrix) {
                 String value = matrixItem.getValue();
@@ -105,7 +141,17 @@ public class SeatingService {
         }
     }
 
-    private void addPassengersToSeats(Integer numberOfPassengers, List<MatrixItem> aisleList, List<MatrixItem> windowList, List<MatrixItem> centerList) {
+    /**
+     * logic to add passengers to their respective seats
+     * @param numberOfPassengers
+     * @param aisleList
+     * @param windowList
+     * @param centerList
+     */
+    private void addPassengersToSeats(Integer numberOfPassengers,
+                                      List<MatrixItem> aisleList,
+                                      List<MatrixItem> windowList,
+                                      List<MatrixItem> centerList) {
         int countOfPassengersAdded = 0;
         for (MatrixItem item: aisleList) {
             if(countOfPassengersAdded <= numberOfPassengers) {
@@ -125,12 +171,16 @@ public class SeatingService {
             if(countOfPassengersAdded < numberOfPassengers) {
                 countOfPassengersAdded++;
                 item.setHasValue(true);
-
                 addpassengersToSeats(countOfPassengersAdded, item);
             }
         }
     }
 
+    /**
+     * logic to add passengers to their respective seats
+     * @param countOfPassengersAdded
+     * @param item
+     */
     private void addpassengersToSeats(int countOfPassengersAdded, MatrixItem item) {
         String val = "";
         if (countOfPassengersAdded <= 9)
